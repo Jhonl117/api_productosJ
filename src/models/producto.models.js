@@ -1,5 +1,5 @@
 
-// La Dependencia Mongoose
+//Dependencia Mongoose
 
 const { Scheme, model, default: mongoose } = require('mongoose');
 
