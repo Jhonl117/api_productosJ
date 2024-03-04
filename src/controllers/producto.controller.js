@@ -51,7 +51,7 @@ const productoPost = async ( req, res ) => {
     }
 
 }
-
+//h
 // Funcion API PUT
 
 const productoPut = async (req, res) => {
