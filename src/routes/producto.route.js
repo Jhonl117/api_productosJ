@@ -9,15 +9,18 @@ const route = Router()
 
 const saveImagen = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, './public/uploads')
+      const destinationPath = path.join(__dirname, 'public', 'uploads');
+      console.log('Destination Path:', destinationPath);
+      cb(null, destinationPath);
     },
     filename: (req, file, cb) => {
-        if( file !== null ){
-            const ext = file.originalname.split('.').pop()
-            cb(null, Date.now()+'.'+ext)
-        }
-    }
-})
+      const ext = file.originalname.split('.').pop();
+      const fileName = Date.now() + '.' + ext;
+      console.log('Nombre del Archivo:', fileName);
+      cb(null, fileName);
+    },
+  });
+  
 
 const subirImagen = multer({storage: saveImagen})
 

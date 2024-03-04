@@ -6,22 +6,24 @@ const fs = require('fs');
 
 // Funcion API GET
 
-const productoGet = async ( req, res ) => {
-
-    try{
-        const { id } = req.params; 
-
-        const producto = (id === undefined) 
-            ? await productoModelo.find()
-            : await productoModelo.findById(id);
-
-        res.json( { producto });
-
-    }catch(error){
-        res.json({ msg: error})
+const productoGet = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      const producto = (id === undefined)
+        ? await productoModelo.find()
+        : await productoModelo.findById(id);
+  
+      if (producto) {
+        res.json({ producto });
+      } else {
+        res.status(404).json({ msg: 'Producto no encontrado' });
+      }
+  
+    } catch (error) {
+      res.status(500).json({ msg: 'Error interno del servidor' });
     }
-    
-}
+  }
 
 // Funcion API POST
 
@@ -52,36 +54,37 @@ const productoPost = async ( req, res ) => {
 
 // Funcion API PUT
 
-const productoPut = async ( req, res ) => {
-
+const productoPut = async (req, res) => {
     let messagge = 'Modificacion Realizada con Exito!';
-    const { _id, codigo, nombreProducto,  stock, precioCOP, precioUSD, descripcion} = req.body;
-
-    try{
-        await eliminarImagen(_id);
-        await productoModelo.updateMany(
-            {_id: _id},
-            {$set: {
-                codigo: codigo,
-                nombreProducto: nombreProducto,
-                fotoProducto: '/uploads/'+req.file.filename,
-                stock: stock,
-                precioCOP: precioCOP,
-                precioUSD: precioUSD,
-                descripcion: descripcion,
-            }}
-        );
-
-        
-
-    }catch( error ){
-        messagge = error;
-
+    const { _id, codigo, nombreProducto, stock, precioCOP, precioUSD, descripcion } = req.body;
+  
+    try {
+      let updateFields = {
+        codigo: codigo,
+        nombreProducto: nombreProducto,
+        stock: stock,
+        precioCOP: precioCOP,
+        precioUSD: precioUSD,
+        descripcion: descripcion,
+      };
+  
+      // Verifica si se proporcionó una nueva imagen antes de agregarla a los campos de actualización
+      if (req.file) {
+        updateFields.fotoProducto = '/uploads/' + req.file.filename;
+      }
+  
+      // Actualiza el producto
+      await productoModelo.updateMany({ _id: _id }, { $set: updateFields });
+  
+      // No es necesario eliminar la imagen aquí
+  
+    } catch (error) {
+      messagge = 'error';
     }
-
-    res.json({ msg: messagge })
-}
-
+  
+    res.json({ msg: messagge });
+  }
+  
 // Funcion API DELETE
 
 const eliminarImagen = async(id) => {
